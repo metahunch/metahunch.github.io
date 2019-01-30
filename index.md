@@ -1,0 +1,1 @@
+_collections/posts/index.md
