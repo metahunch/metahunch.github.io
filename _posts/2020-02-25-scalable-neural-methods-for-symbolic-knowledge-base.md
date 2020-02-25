@@ -50,11 +50,11 @@ $$\mathbf{x}^{t} = follow(\mathbf{x}^{t-1}, \mathbf{r}^t) \tag{2}$$
 
 As we can see from Eq.$1$ , sparse-matrix operation could not be extended into minibatches, which is not efficent and scalable for large-scale KBs.  The most ingenious part is to decompose $\mathbf{x}\mathbf{M}_R$ sparse operation into the following form:
 
-$$follow(x,r) = (\mathbf{x}\mathbf{M}^{T}_{subj} \odot \mathbf{r}\mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{3}$$   
+$$follow(x,r) = (\mathbf{x} \mathbf{M}^{T}_{subj} \odot \mathbf{r} \mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{3}$$   
 
-The three sparse matrices $\mathbf{M}_{subj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$ and $\mathbf{M}_{rel} \in {\lbrace 0,1 \rbrace}^{N_t \times N_r}$ and $M_{obj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$  are derived from all the tuples of KBs  for example the $\mathcal{l}$-th tuple  $(i_l,j_l,k_l)$ [^2]  from KB assertion $r_k(x_i,x_j)$, $\mathbf{M}_{subj}[\mathcal{l}, i_l] =1$,  $\mathbf{M}_{rel}[\mathcal{l}, k_l] =1$  and $\mathbf{M}_{obj}[\mathcal{l}, j_l] =1$. 
+The three sparse matrices ${\mathbf{M}_{subj}} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$ and ${\mathbf{M}_{rel}} \in {\lbrace 0,1 \rbrace}^{N_t \times N_r}$ and $ {\mathbf{M}_{obj}} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$  are derived from all the tuples of KBs  for example the $\mathcal{l}$-th tuple  $(i_l,j_l,k_l)$ [^2]  from KB assertion $r_k(x_i,x_j)$, ${\mathbf{M}_{subj}}[\mathcal{l}, i_l] =1$,  ${\mathbf{M}_{rel}}[\mathcal{l}, k_l] =1$  and ${\mathbf{M}_{obj}}[\mathcal{l}, j_l] =1$. 
 
-> $\mathbf{x}\mathbf{M}^{T}_{subj}$ are the triples with an entity in  $\mathbf{x}$ as their subject, $\mathbf{r}\mathbf{M}^{T}_{rel}$ are the triples with a relation in $\mathbf{r}$. The final multiplication finds the object entities of the tuples in the interaction. 
+> $\mathbf{x} {\mathbf{M}^{T}_{subj}}$ are the triples with an entity in  $\mathbf{x}$ as their subject, $\mathbf{r} {\mathbf{M}^{T}_{rel}}$ are the triples with a relation in $\mathbf{r}$. The final multiplication finds the object entities of the tuples in the interaction. 
 
 In such way,  Eq.$3$ could be easily extended to mini-batches with batch size of $b$, i.e,  $\mathbf{X}\in \mathcal{R}^{b \times N_e}$, $\mathbf{R}\in \mathcal{R}^{b \times N_r}$  
 
@@ -84,7 +84,7 @@ By reformulating the *follow* operation in more efficient ways,  it is eaiser to
 
 1. From the perspective of my understanding (may be wrong),  this paper solves the problem that multi-hop inferences (matrix manipulation) over symbolic KBs represented by huge sparse matrix $\mathbf{M}_R$ could not fit into limited GPU memory. 
 
-   - The authors refine the KB representations by decomposing KB tuples $(x_i, x_j, r_k)$ into three sparse matrices $\mathbf{M}_{subj}$ ,$\mathbf{M}_{obj}$ and $\mathbf{M}_{rel}$.  Essentially it is similiar to  explicit **tensor decomposition** in Eq.$3$.
+   - The authors refine the KB representations by decomposing KB tuples $(x_i, x_j, r_k)$ into three sparse matrices ${\mathbf{M}_{subj}}$ ,${\mathbf{M}_{obj}}$ and ${\mathbf{M}_{rel}}$.  Essentially it is similiar to  explicit **tensor decomposition** in Eq.$3$.
 
    - Batching input data and distributing matrix operations would allow for reasoning over ten-million scale of knowledge graphs. 
    - Could multi-hop inferences in Eq.$2$ be regarded as **soft transitive closure**？Starting from the initial nodes, check the reachability of targeted nodes in the knowledge graphs. 
