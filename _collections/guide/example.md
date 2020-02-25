@@ -18,10 +18,12 @@ You can place subsections as follows.
 
 ## Using Maths
 
-You can use math as you would in latex. Let $n>2$ be an integer.
-Consider the equation:
+You can use math as you would in latex,
+but please leave a space before any superscript or subscript.
+Let $n > 2$ be an integer. Consider the equation:
+
 $$
-a^n + b^n = c^n
+a ^n + b ^n = c ^n
 $$
 
 Wiles proved the following theorem.
