@@ -22,7 +22,7 @@ This paper introduces a scalable and efficient way to incorporate the whole sema
 
 ### Motivation
 
-Injecting external knowledge from existing knowledge bases (graphs) into neural models is a hot but non-trivial problem, which benifits many downstream tasks *i.e.,* KBQA.   
+Injecting external knowledge from existing knowledge bases (graphs) into neural models is a hot but non-trivial problem, which benifits many downstream tasks *i.e.,* KBQA.   
 
 Previous works simply adopt entity vectors or relation vectors as features, derived from knowledge embedding algorithms such as TransE,  ConvE and DistMult and do not support multi-step inference effectively. Reasoning over KBs mostly focuses on local graphs considering the unrealistic encoding the whole KB (one real KB has 13 million entities and 44 million facts). This paper propopses a novel way to fully encode the symbolic KB so as to fit to GPU memory and effective inference methos to incorporate into neural models. 
 
@@ -30,17 +30,17 @@ Previous works simply adopt entity vectors or relation vectors as features, deri
 
 > The original paper is very hard to follow in terms of  notations and organizations. I briefly summarize the key ideas and experimental insights.
 
-***Basic definition:*** Normally in a KB, there are a set of entities $x \in X$ and a set of relations $r \in R$.  Denote $N_e$ be the number of entities and $N_r$ be the number of relations.  A relation $r$ could be encoded as a matrix $M_r \in \mathcal{R}^{N_e \times N_e}$ [^1], where $M_r[i,j] \in \{0,1\}$ means that whether a pair of entities $(x_i, x_j)$ has a relation $r$.   To neuralize the representations,  a weighted entity set $X$ is encode as a vector $\mathbf{x} \in \mathcal{R}^{N_e}$, which $\mathbf{x}_{i}$ is the weight of $x_i$ in $X$. Similiarly a relation set $R$ is encoded as  $\mathbf{r} \in \mathcal{R}^{N_r}$. 
+***Basic definition:*** Normally in a KB, there are a set of entities $x \in X$ and a set of relations $r \in R$.  Denote $N_e$ be the number of entities and $N_r$ be the number of relations.  A relation $r$ could be encoded as a matrix $M_r \in \mathcal{R}^{N_e \times N_e}$ [^1], where $M_r[i,j] \in {\lbrace 0,1 \rbrace}$ means that whether a pair of entities $(x_i, x_j)$ has a relation $r$.   To neuralize the representations,  a weighted entity set $X$ is encode as a vector $\mathbf{x} \in \mathcal{R}^{N_e}$, which $\mathbf{x}_{i}$ is the weight of $x_i$ in $X$. Similiarly a relation set $R$ is encoded as  $\mathbf{r} \in \mathcal{R}^{N_r}$. 
 
 ***Relation following operation:***  Multi-hop reasoning over knowledge graphs actually is equivalent to computing the neighbors of multiple steps originated from an entity.  The authors define the operation of *R-neighbors* for an entity set $X$,  i.e., find all the first-order neighbors of the enity in the $X$ under all the realtions in the $R$.  
 
 Let $M_{R}$ be a weighted mixture of relation matrices of all relations, 
 
-$$\mathbf{M}_R \equiv \sum_{k=1}^{N_R} \mathbf{r}[k] \cdot M_{r_k}$$. 
+$$\mathbf{M}_R \equiv \sum_{k=1}^{N_R} \mathbf{r}[k] \cdot M_{r_k}$$
 
 Hence the approximate *R-neighbors* with differentiable operation could be reformulated as: 
 
-$follow(\mathbf{x}, \mathbf{r}) \equiv \mathbf{x}\mathbf{M}_R = \mathbf{x}(\sum_{k=1}^{N_R} \mathbf{r}[k] \cdot M_{r_k}) \tag{1}$  
+$$follow(\mathbf{x}, \mathbf{r}) \equiv \mathbf{x}\mathbf{M}_R = \mathbf{x}(\sum_{k=1}^{N_R} \mathbf{r}[k] \cdot M_{r_k}) \tag{1}$$ 
 
 Intuitively matrix multiplication is to find the approximations of adjacent nodes assoicated with all types of  relation edges.  We could easily generalize to $T-$hop reasoning:
 
@@ -50,13 +50,13 @@ $$\mathbf{x}^{t} = follow(\mathbf{x}^{t-1}, \mathbf{r}^t) \tag{2}$$
 
 As we can see from Eq.$1$ , sparse-matrix operation could not be extended into minibatches, which is not efficent and scalable for large-scale KBs.  The most ingenious part is to decompose $\mathbf{x}\mathbf{M}_R$ sparse operation into the following form:
 
-$follow(x,r) = (\mathbf{x}\mathbf{M}^{T}_{subj} \odot \mathbf{r}\mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{3}$   
+$$follow(x,r) = (\mathbf{x}\mathbf{M}^{T}_{subj} \odot \mathbf{r}\mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{3}$$   
 
-The three sparse matrices $\mathbf{M}_{subj} \in \{0,1\}^{N_t \times N_e}$, $\mathbf{M}_{rel} \in \{0,1\}^{N_t \times N_r}$, and $M_{obj} \in \{0,1\}^{N_t \times N_e}$  are derived from all the tuples of KBs  for example the $\mathcal{l}$-th tuple  $(i_l,j_l,k_l)$ [^2]  from KB assertion $r_k(x_i,x_j)$, $\mathbf{M}_{subj}[\mathcal{l}, i_l] =1$,  $\mathbf{M}_{rel}[\mathcal{l}, k_l] =1$  and $\mathbf{M}_{obj}[\mathcal{l}, j_l] =1$. 
+The three sparse matrices $\mathbf{M}_{subj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$, $\mathbf{M}_{rel} \in {\lbrace 0,1 \rbrace}^{N_t \times N_r}$, and $M_{obj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$  are derived from all the tuples of KBs  for example the $\mathcal{l}$-th tuple  $(i_l,j_l,k_l)$ [^2]  from KB assertion $r_k(x_i,x_j)$, $\mathbf{M}_{subj}[\mathcal{l}, i_l] =1$,  $\mathbf{M}_{rel}[\mathcal{l}, k_l] =1$  and $\mathbf{M}_{obj}[\mathcal{l}, j_l] =1$. 
 
-> $\mathbf{x}\mathbf{M}^{T}_{subj}$ are the triples with an entity in  $\mathbf{x}$ as their subject,   $\mathbf{r}\mathbf{M}^{T}_{rel}$  are the triples with a relation in $\mathbf{r}$. The final multiplication finds the object entities of the tuples in the interaction. 
+> $\mathbf{x}\mathbf{M}^{T}_{subj}$ are the triples with an entity in  $\mathbf{x}$ as their subject, $\mathbf{r}\mathbf{M}^{T}_{rel}$ are the triples with a relation in $\mathbf{r}$. The final multiplication finds the object entities of the tuples in the interaction. 
 
-In such way,  Eq.$3$ could be easily extended to mini-batches with batch size of $b$, i.e,  $\mathbf{X}\in \mathcal{R}^{b \times N_e}$  $\mathbf{R}\in \mathcal{R}^{b \times N_r}$  
+In such way,  Eq.$3$ could be easily extended to mini-batches with batch size of $b$, i.e,  $\mathbf{X}\in \mathcal{R}^{b \times N_e}$, $\mathbf{R}\in \mathcal{R}^{b \times N_r}$  
 
 $$follow(\mathbf{X},\mathbf{R}) = (\mathbf{X}\mathbf{M}^{T}_{subj} \odot \mathbf{R}\mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{4} $$
 
