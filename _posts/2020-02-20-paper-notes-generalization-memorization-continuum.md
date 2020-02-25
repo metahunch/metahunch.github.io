@@ -39,17 +39,17 @@ Since the C-Score requires large training model from scratch thousand times, the
       - kernel density estimation on <u>input</u> & <u>hidden representation</u>
       - time course of training (learning speed)
 
-    - **(Usage problem)** to utilize the score? 
+    - **(Usage problem)** to utilize the score?
 
       $$\Rightarrow$$ ***Debugging dataset***
 
       > "*we show that the score identifies out-of-distribution and mislabeled examples at one end of the continuum and regular exampels at the other end.*"
-      
+
       - Potential applications:
         - Understand learning (memorization & generalization) dynamics
         - Curriculum learning, out-of-distribution detection
         - Active data collection
-    
+
   - Relationship to Feldman's memorization score:
 
     > "*defined relative to a dataset that includes $$(x,y)$$ and measures the change in the prediction accuracy on $$x$$ when $$(x, y)$$ is removed from the dataset*".
