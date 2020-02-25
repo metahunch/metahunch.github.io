@@ -13,7 +13,7 @@ comments: true
 
 > If you want to see a longer version of the paper summary, please refer to **the longer *objective* summary** part.
 
-This paper define a C-Score (Consistency Score) of each training example $(x, y)$ - the expected learnable accuracy of $\hat{y} = y$ (where $\hat{y} = \mathcal{A}(x)$, model prediction when trained with rest of the training set) - to reflect the *relative* regularity of the example, so that human can understand the underlying structure of the whole dataset intuitively, i.e. to detect adversarial or noisy instances, to identify highly regular instances for abstraction (model forgetting its details) versus exceptional instances for memorization (model remember all its details), etc.
+[This paper](https://arxiv.org/abs/2002.03206) define a C-Score (Consistency Score) of each training example $(x, y)$ - the expected learnable accuracy of $\hat{y} = y$ (where $\hat{y} = \mathcal{A}(x)$, model prediction when trained with rest of the training set) - to reflect the *relative* regularity of the example, so that human can understand the underlying structure of the whole dataset intuitively, i.e. to detect adversarial or noisy instances, to identify highly regular instances for abstraction (model forgetting its details) versus exceptional instances for memorization (model remember all its details), etc.
 
 Since the C-Score requires large training model from scratch thousand times, they propose three proxies of C-Score based on label-aware *kernel* (<u>see below Eq. 3 in paper</u>) distance of the - **i)** input, **ii)** hidden - representation $(x, y)$ w.r.t. rest of training instances, the $(x_i, y_i)$s; or on **iii)** the learning speed of $(x, y)$; so that only ***one single*** training is required. Experiments shows **iii)** correlates well ($\rho = 0.864$) with C-Score. During the process of the above investigations, carefully designed and very logical experiments are carried out, with further insights on:
 
@@ -31,7 +31,7 @@ Since the C-Score requires large training model from scratch thousand times, the
   >
   > The formal form of the definition is:
   >
-  > $C(x, y)_{\mathcal{A}, \mathcal{P}, n} = \mathbb{E}_{D \sim_n \mathcal{P}} [\hat{y}_{\mathcal{A}} = y \vert D, x]$
+  > $$C(x, y)_{\mathcal{A}, \mathcal{P}, n} = \mathbb{E}_{D \sim_n \mathcal{P}} [\hat{y}_{\mathcal{A}} = y \vert D, x]$$
   - Two derived Qs:
 
     - **(Estimation problem)** to estimate the score accurately and efficiently?
