@@ -1,10 +1,10 @@
 ---
-
 layout: post
 title: Scalable Neural Methods for Reasoning with a Symbolic Knowledge Base
 date: 2020-02-25
 author: Changlong Yu
 comments: true
+
 
 ---
 
@@ -12,6 +12,8 @@ comments: true
 
 - toc
 {:toc}
+
+
 ## TLDR
 
 This paper introduces a scalable and efficient way to incorporate the whole semantics of KB into neural models so as to conduct multi-hop inferences over large-scale KBs.  Specially a symbolic KB is represented by three sparse matrices and inferences are conducted by distributed matrix manipulation in several GPUs. Neuralized KB reasoning is handled by weighted relation vectors learned from a neural module.  Please refer to the following parts for details. 
@@ -48,15 +50,18 @@ $$\mathbf{x}^{t} = follow(\mathbf{x}^{t-1}, \mathbf{r}^t) \tag{2}$$
 
 As we can see from Eq.$1$ , sparse-matrix operation could not be extended into minibatches, which is not efficent and scalable for large-scale KBs.  The most ingenious part is to decompose $\mathbf{x}\mathbf{M}_R$ sparse operation into the following form:
 $$follow(x,r) = (\mathbf{x} \mathbf{M}^{T}_{subj} \odot \mathbf{r} \mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{3}$$  
-The three sparse matrices ${\mathbf{M}}_{subj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$, ${\mathbf{M}}_{rel} \in {\lbrace 0,1 \rbrace}^{N_t \times N_r}$, ${\mathbf{M}}_{obj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$are derived from all the tuples of KBs for example the $\mathcal{l}$-th tuple  $(i_l,j_l,k_l)$ [^2]  from KB assertion $r_k(x_i,x_j)$, ${\mathbf{M}}_{subj}[\mathcal{l}, i_l] =1$,  ${\mathbf{M}}_{rel}[\mathcal{l}, k_l] =1$  and ${\mathbf{M}}_{obj}[\mathcal{l}, j_l] =1$. 
+The three sparse matrices ${\mathbf{M}} _{subj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$, ${\mathbf{M}} _{rel} \in {\lbrace 0,1 \rbrace}^{N_t \times N_r}$, ${\mathbf{M}} _{obj} \in {\lbrace 0,1 \rbrace}^{N_t \times N_e}$are derived from all the tuples of KBs for example the $\mathcal{l}$-th tuple  $(i_l,j_l,k_l)$ [^2]  from KB assertion $r_k(x_i,x_j)$, ${\mathbf{M}} _{subj}[\mathcal{l}, i_l] =1$,  ${\mathbf{M}} _{rel}[\mathcal{l}, k_l] =1$  and ${\mathbf{M}} _{obj}[\mathcal{l}, j_l] =1$. 
 
-> $\mathbf{x} {\mathbf{M}}^{T}_{subj}$ are the triples with an entity in  $\mathbf{x}$ as their subject, $\mathbf{r} {\mathbf{M}}^{T}_{rel}$ are the triples with a relation in $\mathbf{r}$. The final multiplication finds the object entities of the tuples in the interaction. 
+> $\mathbf{x} {\mathbf{M}}^{T} _{subj}$ are the triples with an entity in  $\mathbf{x}$ as their subject, $\mathbf{r} {\mathbf{M}}^{T} _{rel}$ are the triples with a relation in $\mathbf{r}$. The final multiplication finds the object entities of the tuples in the interaction. 
 
 In such way,  Eq.$3$ could be easily extended to mini-batches with batch size of $b$, i.e,  $\mathbf{X}\in \mathcal{R}^{b \times N_e}$, $\mathbf{R}\in \mathcal{R}^{b \times N_r}$ 
+
 $$follow(\mathbf{X},\mathbf{R}) = (\mathbf{X}\mathbf{M}^{T}_{subj} \odot \mathbf{R}\mathbf{M}^{T}_{rel}) \mathbf{M}_{obj} \tag{4} $$
+
 By reformulating the *follow* operation in more efficient ways,  it is eaiser to parallelly run a batch of data and distribute three large sparse matrices into serveal GPUs with limited memory.   
 
 ### Incorporating to Neural Models
+
 - KBQA:  The training data for this task is $(q,A)$ , where $q$ is natural language question and $A$ is a set of KB entities.  Using the aforementioned KB for reasoning means neural models could predict the relations from the initial entity set $\mathbf{x^0}$ to the desired answers $A$ along the reasoning process.
 
   $$\mathbf{r}^{t} = f^{t}(q) \ for \ t \in \{1, 2, ... ,T\} \tag{5}$$
@@ -76,7 +81,7 @@ By reformulating the *follow* operation in more efficient ways,  it is eaiser to
 ### Subjective Comments
 
 1. From the perspective of my understanding (may be wrong),  this paper solves the problem that multi-hop inferences (matrix manipulation) over symbolic KBs represented by huge sparse matrix $\mathbf{M}_R$ could not fit into limited GPU memory. 
-   - The authors refine the KB representations by decomposing KB tuples $(x_i, x_j, r_k)$ into three sparse matrices ${{\mathbf{M}}_{subj}}$,  ${{\mathbf{M}}_{rel}}$ and ${{\mathbf{M}}_{obj}}$.  Essentially it is similiar to  explicit **tensor decomposition** in Eq.$3$.
+   - The authors refine the KB representations by decomposing KB tuples $(x_i, x_j, r_k)$ into three sparse matrices ${{\mathbf{M}} _{subj}}$,  ${{\mathbf{M}} _{rel}}$ and ${{\mathbf{M}} _{obj}}$.  Essentially it is similiar to  explicit **tensor decomposition** in Eq.$3$.
    - Batching input data and distributing matrix operations would allow for reasoning over ten-million scale of knowledge graphs. 
    - Could multi-hop inferences in Eq.$2$ be regarded as **soft transitive closure**？Starting from the initial nodes, check the reachability of targeted nodes in the knowledge graphs. 
 
