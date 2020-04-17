@@ -11,7 +11,7 @@ comments: true
 
 ## TLDR
 
-This paper points out self-training works on neural sequence generation mainly because dropout perturb the hidden states. Following this observation, it proposes the noisy self-training that perturb the inputs during pseudo-labelling the unlabelled data. The experiments show noisy self-training can significantly improve the generation performance by smoothing the generation space.
+This paper points out self-training works on neural sequence generation mainly because dropout perturb the hidden states. Following this observation, it proposes the noisy self-training that perturb the inputs during pseudo-labelling the unlabelled data. The experiments show noisy self-training can significantly improve the generation performance by smoothing the prediction space.
 
 ## Self-training
 
@@ -26,7 +26,7 @@ This paper points out self-training works on neural sequence generation mainly b
 
 The unsupervised loss is defined as
 
-$$\mathcal{L} _U = -\mathbb{E} _{x \sim p(x)} \mathbb{E} _{y \sim p _{\theta *} (y\mid x \log p _\theta (y\mid x)}$$
+$$\mathcal{L} _U = -\mathbb{E} _{x \sim p(x)} \mathbb{E} _{y \sim p _{\theta *} (y\mid x \log p _\theta (y\mid x))}$$
 
 where $p(x)$ is the empirical data distribution approximated with samples from $S$, $p(y\mid x)$ is the conditional distribution defined by the model. $\theta *$ is set as the parameter of the supervised baseline and fixed.
 
@@ -59,7 +59,7 @@ Inspired by dropout benefit self-training by perturbing hidden states, authors p
 
 The loss function in classic self-training would be modified to:
 
-$$\mathcal{L} _U = -\mathbb{E} _{x' \sim g(x), x \sim p(x)} \mathbb{E} _{y \sim p _{\theta *} (y\mid x \log p _\theta (y\mid x')}$$
+$$\mathcal{L} _U = -\mathbb{E} _{x' \sim g(x), x \sim p(x)} \mathbb{E} _{y \sim p _{\theta *} (y\mid x \log p _\theta (y\mid x'))}$$
 
 where $g(x)$ is a perturbation function. In terms of machine translation, the authors try two different perturbation functions:
 
@@ -68,7 +68,7 @@ where $g(x)$ is a perturbation function. In terms of machine translation, the au
 
 ## Thoughts
 
-The noisy self-training would be an efficient trick for sequence generation tasks with small-size training data.
+The noisy self-training would be an efficient trick for sequence generation tasks with small-size training data. Adding appropriate noise to the inputs may smooth the prediction space like "erode" in the computer vision where both errors and good predictions may be eroded by surroundings. The smoothing effect cannot guarantee a performance gain, but fine-tuning benefits from it may because the errors are gathered and eliminated more efficiently.
 
 ## Further Readings
 
