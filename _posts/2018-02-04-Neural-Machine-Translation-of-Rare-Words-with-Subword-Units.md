@@ -11,7 +11,7 @@ comments: true
 
 ## TLDR
 
-This paper introduce a variant of Byte Pair Encoding (BPE) to encode words as sequences of subword units, making the NMT model capable of open-vocabulary translation.
+This paper introduces a variant of Byte Pair Encoding (BPE) to encode words as sequences of subword units, making the NMT model capable of open-vocabulary translation.
 
 ## Byte Pair Encoding
 
